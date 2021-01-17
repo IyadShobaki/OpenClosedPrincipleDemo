@@ -1,4 +1,4 @@
-﻿using BlazorUI.Enum;
+﻿using BlazorUI.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

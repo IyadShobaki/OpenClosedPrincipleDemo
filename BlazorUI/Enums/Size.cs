@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BlazorUI.Enum
+namespace BlazorUI.Enums
 {
-    public enum Color
+    public enum Size
     {
-        Red, Green, Blue, Yellow
+        Small, Medium, Large, Huge
     }
 }

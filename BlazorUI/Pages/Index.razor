@@ -52,31 +52,78 @@
     }
     private void FilterBySize(Size size)
     {
-        var productFilter = new ProductFilter();
-        _products = productFilter.FilterBySize(_products, size);
+        // Old way (Without following the OCP)
+        //var productFilter = new ProductFilter();
+        //_products = productFilter.FilterBySize(_products, size);
+
+
+        // After applying OCP using interfaces
+        //var betterFilter = new BetterFilter();
+        //_products = betterFilter.Filter(_products, new SizeSpecification(size));
+
+        //// Applying OCP using delegates and interfaces
+        ProductFilterDelegate filterDelegate = new ProductFilterDelegate();
+        _products = filterDelegate.GetFilteredProducts(_products, new SizeSpecification(size),
+            FilterByDelegate);
+
 
         StateHasChanged();
 
     }
     private void FilterByColor(Color color)
     {
+        // Old way (Without following the OCP)
         //var productFilter = new ProductFilter();
         //_products = productFilter.FilterByColor(_products, color);
 
-        var betterFilter = new BetterFilter();
-        _products = betterFilter.Filter(_products, new ColorSpecification(color));
+
+        // After applying OCP using interfaces
+        //var betterFilter = new BetterFilter();
+        //_products = betterFilter.Filter(_products, new ColorSpecification(color));
+
+
+        // Applying OCP using delegates and interfaces
+        ProductFilterDelegate filterDelegate = new ProductFilterDelegate();
+        Func<IEnumerable<Product>, ISpecification<Product>, IEnumerable<Product>> filter = FilterByDelegate;
+        _products = filterDelegate.GetFilteredProducts(_products, new ColorSpecification(color),
+            filter);
+
         StateHasChanged();
     }
 
     private void FilterByColorAndSize(Color color, Size size)
     {
+        // Old way (Without following the OCP)
         //var productFilter = new ProductFilter();
         //_products = productFilter.FilterBySizeAndColor(_products, color, size);
 
-        var betterFilter = new BetterFilter();
-        _products = betterFilter.Filter(_products, new AndSpecifiaction<Product>(
-        new ColorSpecification(color), new SizeSpecification(size)));
+
+        // After applying OCP using interfaces
+        //var betterFilter = new BetterFilter();
+        //_products = betterFilter.Filter(_products, new AndSpecifiaction<Product>(
+        //new ColorSpecification(color), new SizeSpecification(size)));
+
+        // Applying OCP using delegates and interfaces
+        ProductFilterDelegate filterDelegate = new ProductFilterDelegate();
+        ISpecification<Product>[] specifications = { new ColorSpecification(color),
+            new SizeSpecification(size) };
+        _products = filterDelegate.GetFilteredProducts(_products,
+            new AndSpecifiaction<Product>(specifications),
+            FilterByDelegate);
+
 
         StateHasChanged();
     }
+    public static IEnumerable<Product> FilterByDelegate(IEnumerable<Product> products,
+        ISpecification<Product> specification)
+    {
+        foreach (var p in products)
+        {
+            if (specification.IsSatisfied(p))
+            {
+                yield return p;
+            }
+        }
+    }
+
 }
