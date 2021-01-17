@@ -1,0 +1,11 @@
+﻿<div class="col-4">
+    <div class="Card border m-2">
+        <div class="card-title"><strong>@Model.ProductName</strong></div>
+        <div class="card-text"><strong>@Model.Size</strong></div>
+        <div class="card-body" style="background-color: @Model.Color">@Model.Color</div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public Product Model { get; set; }
+}

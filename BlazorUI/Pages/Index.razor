@@ -1,0 +1,63 @@
+﻿@page "/"
+
+<div class="container">
+    <div class="row m-2">
+        <div class="col-4">
+            <button type="button" @onclick="OriginalList">Original List</button>
+        </div>
+        <div class="col-4">
+            <select @bind="_size">
+                @foreach (Size value in Enum.GetValues(typeof(Size)))
+                {
+                    <option value="@value">@value</option>
+                }
+            </select>
+            <button type="button" @onclick="()=>FilterBySize(_size)">Filter by size</button>
+        </div>
+        <div class="col-4">
+            <select @bind="_color">
+                @foreach (Color value in Enum.GetValues(typeof(Color)))
+                {
+                    <option value="@value">@value</option>
+                }
+            </select>
+            <button type="button" @onclick="()=>FilterByColor(_color)">Filter by color</button>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var p in _products)
+        {
+            <ProductComponent Model="p" />
+        }
+    </div>
+</div>
+
+@code {
+    SampleData _sampleDate;
+    Size _size;
+    Color _color;
+    IEnumerable<Product> _products;
+
+    protected override void OnInitialized()
+    {
+        _sampleDate = new SampleData();
+        _products = _sampleDate.GetProducts();
+    }
+    private void OriginalList()
+    {
+        _products = _sampleDate.GetProducts();
+    }
+    private void FilterBySize(Size size)
+    {
+        var productFilter = new ProductFilter();
+        _products = productFilter.FilterBySize(_products, size);
+        StateHasChanged();
+
+    }
+    private void FilterByColor(Color color)
+    {
+        var productFilter = new ProductFilter();
+        _products = productFilter.FilterByColor(_products, color);
+        StateHasChanged();
+    }
+}
