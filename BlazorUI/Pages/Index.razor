@@ -2,26 +2,29 @@
 
 <div class="container">
     <div class="row m-2">
-        <div class="col-4">
+        <div class="col-2">
             <button type="button" @onclick="OriginalList">Original List</button>
         </div>
-        <div class="col-4">
+        <div class="col-5">
+            <label>Choose a color: </label>
             <select @bind="_size">
                 @foreach (Size value in Enum.GetValues(typeof(Size)))
                 {
                     <option value="@value">@value</option>
                 }
             </select>
-            <button type="button" @onclick="()=>FilterBySize(_size)">Filter by size</button>
-        </div>
-        <div class="col-4">
+            <label>Choose a size: </label>
             <select @bind="_color">
                 @foreach (Color value in Enum.GetValues(typeof(Color)))
                 {
                     <option value="@value">@value</option>
                 }
             </select>
+        </div>
+        <div class="col-5">
+            <button type="button" @onclick="()=>FilterBySize(_size)">Filter by size</button>
             <button type="button" @onclick="()=>FilterByColor(_color)">Filter by color</button>
+            <button type="button" @onclick="()=>FilterByColorAndSize(_color, _size)">Filter by color and size</button>
         </div>
     </div>
     <div class="row">
@@ -51,13 +54,29 @@
     {
         var productFilter = new ProductFilter();
         _products = productFilter.FilterBySize(_products, size);
+
         StateHasChanged();
 
     }
     private void FilterByColor(Color color)
     {
-        var productFilter = new ProductFilter();
-        _products = productFilter.FilterByColor(_products, color);
+        //var productFilter = new ProductFilter();
+        //_products = productFilter.FilterByColor(_products, color);
+
+        var betterFilter = new BetterFilter();
+        _products = betterFilter.Filter(_products, new ColorSpecification(color));
+        StateHasChanged();
+    }
+
+    private void FilterByColorAndSize(Color color, Size size)
+    {
+        //var productFilter = new ProductFilter();
+        //_products = productFilter.FilterBySizeAndColor(_products, color, size);
+
+        var betterFilter = new BetterFilter();
+        _products = betterFilter.Filter(_products, new AndSpecifiaction<Product>(
+        new ColorSpecification(color), new SizeSpecification(size)));
+
         StateHasChanged();
     }
 }
